@@ -1,4 +1,4 @@
-function C = setdiff(A,B) % --*-- Unitary tests --*--
+    function [C, varargout] = setdiff(A,B) % --*-- Unitary tests --*--
 
 %@info:
 %! @deftypefn {Function File} {@var{C} =} setdiff (@var{A},@var{B})
@@ -48,18 +48,35 @@ end
 
 if eq(A,B)
     C = A;
+		if nargout > 1
+		  varargout(1) = {1:length(A)};
+		end
     return
 end
 
 if ~isequal(A.freq,B.freq)
     C = dates();
+		if nargout > 1
+		  varargout(1) = [];
+		end
     return
 end
 
 if isoctave || matlab_ver_less_than('8.1.0')
-    time = setdiff(A.time,B.time,'rows');
+    if nargout > 1
+		  [time, i_A] = setdiff(A.time,B.time,'rows');
+			varargout(1) = {i_A};
+		else
+		  time = setdiff(A.time,B.time,'rows');
+		end
 else
-    time = setdiff(A.time,B.time,'rows','legacy');
+    if nargout > 1
+		  [time, i_A] = setdiff(A.time,B.time,'rows','legacy');
+			varargout(1) = {i_A};
+		else
+		  time = setdiff(A.time,B.time,'rows','legacy');
+		end
+    
 end
 
 C = dates();
@@ -69,7 +86,7 @@ end
 
 C.freq = A.freq;
 C.time = time;
-C.ndat = rows(time); 
+C.ndat = rows(time); 	
 
 %@test:1
 %$ % Define some dates objects
